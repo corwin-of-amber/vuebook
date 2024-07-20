@@ -20,7 +20,7 @@ export default toNative(CollapseButton);
 </script>
 
 <style lang="scss" scoped>
-@import '@mdi/font/css/materialdesignicons.min.css';
+@import 'material-design-icons-iconfont/dist/material-design-icons-no-codepoints.min.css';
 
 .collapsible {
     background-color: transparent;
