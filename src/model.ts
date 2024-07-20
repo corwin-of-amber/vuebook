@@ -11,7 +11,7 @@ namespace Model {
         kind: string
         input: string
         outputs?: Output[]
-        loading: boolean
+        loading?: boolean
         completions?: Completion[]
     }
 

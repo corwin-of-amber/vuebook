@@ -1,8 +1,10 @@
 <template>
     <div class="cell">
         <div class="cell--input-container">
+            <template v-if="options.collapsible">
+                <collapse-button :toggle="toggleCollapsed" :collapsed="collapsed" class="collapse-btn-extend"/>
+            </template>
             <div class="cell--input" ref="input"></div>
-            <collapse-button :toggle="toggleCollapsed" :collapsed="collapsed" class="collapse-btn-extend"/>
         </div>
         <div class="cell--outputs" v-if="!collapsed">
             <spinner-anim v-if="model.loading" style="--size: 20px; display: inline-block; vertical-align: middle"/>
@@ -20,6 +22,7 @@
 
 <script lang="ts">
 import {Component, Prop, toNative, Vue} from 'vue-facing-decorator';
+import {Options} from '../options';
 import {CodeEditor} from './editor';
 
 // @ts-ignore
@@ -34,6 +37,7 @@ import CollapseButton from "./collapse-button/collapse-button.vue";
 })
 class ICell extends Vue {
     @Prop model: any
+    @Prop options: Options = {}
 
     collapsed: boolean = false;
 
@@ -91,15 +95,15 @@ export default toNative(ICell);
 </script>
 
 <style lang="scss" scoped>
-.collapse-btn-extend {
-    grid-area: btn;
-    width: 3%;
-}
 
 .cell--input-container {
-    display: grid;
-    grid-template-columns: 3% auto;
-    grid-template-areas: 'btn cell-input';
+    display: flex;
+    flex-direction: row;
+    /*grid-template-columns: 3% auto;
+    grid-template-areas: 'btn cell-input';*/
+    > .cell--input {
+        flex-grow: 1;
+    }
 }
 
 </style>

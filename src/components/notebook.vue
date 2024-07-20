@@ -3,7 +3,7 @@
         <div v-for="cell in model.cells" :key="keyOf(cell)"
              class="cell-container" :class="{focused: cell === this.focusedCell}"
              @focusin="focusedCell = cell" ref="cellContainers">
-            <cell :model="cell" ref="cells" @action="cellAction(cell, $event)"/>
+            <cell :model="cell" ref="cells" :options="_options" @action="cellAction(cell, $event)"/>
         </div>
     </div>
 </template>
@@ -19,8 +19,9 @@
 import {Component, Prop, toNative, Vue} from 'vue-facing-decorator';
 import {NotebookActions} from '../control';
 import type {Model as M, ModelImpl} from '../model';
+import {Options} from '../options';
 // @ts-ignore
-import Cell from './cell.vue';
+import Cell, {ICell} from './cell.vue';
 
 @Component({
     emits: ["cell:action"],
@@ -28,7 +29,11 @@ import Cell from './cell.vue';
 })
 class INotebook extends Vue {
     @Prop model: ModelImpl
-
+    @Prop options: Options
+    $refs: {
+        cells: ICell[],
+        cellContainers: {[key: string]: ICell}
+    }
 
     _keys: AutoIncMap<M.Cell>
     control: NotebookActions
@@ -38,6 +43,8 @@ class INotebook extends Vue {
         this._keys = new AutoIncMap;
         this.control = new NotebookActions(this.model);
     }
+
+    get _options() { return Options.fillin(this.options); }
 
     cellAction(cell: M.Cell, action: { cell?: M.Cell, type: string }) {
         action = {cell, ...action};
@@ -86,11 +93,11 @@ class INotebook extends Vue {
     }
 
     expandAll() {
-        (this.$refs.cells as Array<typeof Cell>).forEach(c => c.expand());
+        this.$refs.cells.forEach(c => c.expand());
     }
 
     collapseAll() {
-        (this.$refs.cells as Array<typeof Cell>).forEach(c => c.collapse());
+        this.$refs.cells.forEach(c => c.collapse());
     }
 
 }

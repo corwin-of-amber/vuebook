@@ -114,4 +114,7 @@ namespace Setup {
     }
 
 }
-export {CodeEditor, ICodeEditor, Setup, Completion, EditorView}
+
+export {EditorView} from '@codemirror/view';
+export {Completion} from '@codemirror/autocomplete';
+export {CodeEditor, ICodeEditor, Setup}
