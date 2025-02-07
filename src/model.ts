@@ -82,6 +82,10 @@ class ModelImpl implements Model.Notebook {
         return this;
     }
 
+    static promote(m: Model.Notebook) {
+        return (m instanceof this) ? m : new this().from(m);
+    }
+
     clearAllOutputs() {
         for (let cell of this.cells) {
             this.clearOutputs(cell);
