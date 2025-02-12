@@ -17,7 +17,7 @@ class NotebookActions {
                 this.model.clearOutputs(action.cell);
                 break;
             case 'insert-after':
-                this.insertAfter(action.cell);
+                reply = this.insertAfter(action.cell);
                 break;
             case 'delete':
                 reply = this.model.delete(action.cell);

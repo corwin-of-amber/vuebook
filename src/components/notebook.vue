@@ -2,7 +2,7 @@
     <div class="notebook">
         <div v-for="cell in model.cells" :key="keyOf(cell)"
              class="cell-container" :class="{focused: cell === this.focusedCell}"
-             @focusin="focusedCell = cell" ref="cellContainers">
+             @focusin="focusedCell = cell">
             <cell :model="cell" ref="cells" :options="_options" @action="cellAction(cell, $event)"/>
         </div>
     </div>
@@ -16,6 +16,7 @@
 </style>
 
 <script lang="ts">
+import * as vue from 'vue';
 import {Component, Prop, toNative, Vue} from 'vue-facing-decorator';
 import {NotebookActions} from '../control';
 import type {Model as M, ModelImpl} from '../model';
@@ -31,13 +32,13 @@ class INotebook extends Vue {
     @Prop model: ModelImpl
     @Prop options: Options
     $refs: {
-        cells: ICell[],
-        cellContainers: {[key: string]: ICell}
+        cells: ICell[]
     }
 
     _keys: AutoIncMap<M.Cell>
     control: NotebookActions
     focusedCell: M.Cell = undefined
+    executingCell: NotebookActions.CellAction
 
     created() {
         this._keys = new AutoIncMap;
@@ -46,22 +47,31 @@ class INotebook extends Vue {
 
     get _options() { return Options.fillin(this.options); }
 
-    cellAction(cell: M.Cell, action: { cell?: M.Cell, type: string }) {
-        action = {cell, ...action};
-        const cellActionResult = this.control.handleCellAction(action as NotebookActions.CellAction);
+    get toc() {
+        this.model.cells.length; // edict dependency on the list
+        return Object.fromEntries(
+            this.$refs.cells.map(x => [this.keyOf(x.model), x]));
+    }
+
+    cellAction(cell: M.Cell, action: Partial<NotebookActions.CellAction>) {
+        let cellAction = {cell, ...action} as NotebookActions.CellAction;
+        const cellActionResult = this.control.handleCellAction(cellAction);
 
         switch (action.type) {
-            case 'delete':
-                if (cellActionResult != undefined) {
-                    this.focusCell(cellActionResult.reply as M.Cell);
-                }
-                this.cleanup();
+            case 'exec':
+            case 'exec-fwd':
+                this.executingCell = cellAction;
                 break;
+            case 'delete':
             case 'go-up':
             case 'go-down':
-                if (cellActionResult != undefined) {
-                    this.focusCell(cellActionResult.reply as M.Cell);
+            case 'insert-after':
+            case 'insert-before':
+                if (cellActionResult?.reply != undefined) {
+                    requestAnimationFrame(() =>
+                        this.focusCell(cellActionResult.reply));
                 }
+                this.cleanup();
                 break;
         }
 
@@ -74,7 +84,7 @@ class INotebook extends Vue {
     }
 
     keyOf(cell: M.Cell) {
-        return this._keys.getOrAlloc(cell);
+        return this._keys.getOrAlloc(vue.toRaw(cell));
     }
 
     /** Remove deleted cells from key map */
@@ -88,8 +98,11 @@ class INotebook extends Vue {
 
     focusCell(cell: M.Cell) {
         this.focusedCell = cell;
-        this.$refs.cellContainers[this.keyOf(cell)].focus();
-        this.$refs.cells[this.keyOf(cell)].focus();
+        let viewCell = this.toc[this.keyOf(cell)];
+        if (viewCell) {
+            viewCell.$el.closest('.cell-container')?.focus();
+            viewCell.focus();
+        }
     }
 
     expandAll() {
