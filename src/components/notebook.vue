@@ -75,7 +75,7 @@ class INotebook extends Vue {
                 break;
         }
 
-        this.$emit('cell:action', action);
+        this.$emit('cell:action', cellAction);
     }
 
     command(command: { command: string }) {

@@ -1,6 +1,5 @@
 import {LocalStore, Serialization} from './infra/store';
 import {createApp} from "vue";
-import {Completion} from "@codemirror/autocomplete";
 
 namespace Model {
     export interface Notebook {
@@ -12,14 +11,12 @@ namespace Model {
         input: string
         outputs?: Output[]
         loading?: boolean
-        completions?: Completion[]
     }
 
     export interface Output {
         /** text, HTMl, etc. */
-        /** TODO: Change to an Or of types. */
-        kind: string
-        payload: string | object
+        kind: string  /** @todo Change to an enum type. */
+        payload: string & {is?: string, props?: any}  /** @todo not really */
     }
 
     /**
@@ -121,8 +118,7 @@ class ModelImpl implements Model.Notebook {
             kind: 'code',
             input: code,
             outputs: [],
-            loading: false,
-            completions: []
+            loading: false
         };
     }
 
@@ -162,10 +158,6 @@ class ModelImpl implements Model.Notebook {
 
     resetLoading() {
         this.cells.forEach(c => c.loading = false);
-    }
-
-    updateCompletions(completions?: Completion[]) {
-        this.cells.forEach(c => c.completions = completions);
     }
 }
 

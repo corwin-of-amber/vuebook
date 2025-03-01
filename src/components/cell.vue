@@ -24,6 +24,7 @@
 import {Component, Prop, toNative, Vue} from 'vue-facing-decorator';
 import {Options} from '../options';
 import {CodeEditor} from './editor';
+import { Model as M } from '../model';
 
 // @ts-ignore
 import SpinnerAnim from "./loading-spinner/spinner-anim.vue";
@@ -36,8 +37,8 @@ import CollapseButton from "./collapse-button/collapse-button.vue";
     components: {SpinnerAnim, CollapseButton}
 })
 class ICell extends Vue {
-    @Prop model: any
-    @Prop options: Options = {}
+    @Prop model: M.Cell
+    @Prop options: Partial<Options> = {}
 
     collapsed: boolean = false;
 
@@ -62,9 +63,9 @@ class ICell extends Vue {
         this.$watch(() => this.model.outputs, v => {
             this.expand();
         })
-        this.$watch(() => this.model.completions, v => {
-            this.editor.completions = this.model.completions;
-        })
+        this.$watch(() => this.options.editor?.completions, v => {
+            this.editor.completions = v;
+        }, {immediate: true});
     }
 
     updateModel() {
