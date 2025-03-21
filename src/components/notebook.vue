@@ -1,7 +1,7 @@
 <template>
     <div class="notebook">
         <div v-for="cell in model.cells" :key="keyOf(cell)"
-             class="cell-container" :class="{focused: cell === this.focusedCell}"
+             class="cell-container" :class="{focused: cell === focusedCell}"
              @focusin="focusedCell = cell">
             <cell :model="cell" ref="cells" :options="_options" @action="cellAction(cell, $event)"/>
         </div>
@@ -42,7 +42,10 @@ class INotebook extends Vue {
 
     created() {
         this._keys = new AutoIncMap;
-        this.control = new NotebookActions(this.model);
+        this.$watch('model', m =>
+            this.control = new NotebookActions(m),
+            {immediate: true}
+        );
     }
 
     get _options() { return Options.fillin(this.options); }
@@ -89,7 +92,7 @@ class INotebook extends Vue {
 
     /** Remove deleted cells from key map */
     cleanup() {
-        let s = new Set(this.model.cells);
+        let s = new Set(this.model.cells.map(x => vue.toRaw(x)));
         let redundant = [...this._keys.keys()].filter(k => !s.has(k));
         for (let k of redundant) this._keys.delete(k);
 
