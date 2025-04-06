@@ -59,6 +59,23 @@ namespace Model {
             return [...s.matchAll(/.*\n|.+$/g)].map(mo => mo[0]);
         }
     }
+
+    export class PythonScriptConverter implements Serialization<Notebook> {
+        SEP = "\n\n# ------\n\n"
+
+        parse(s: string): Notebook {
+            throw new Error('Method not implemented.');            
+        }
+
+        stringify(model: Notebook): string {
+            return ['', ...model.cells.map(cell => this.formatCode(cell)), '']
+                .join(this.SEP);
+        }
+
+        formatCode(cell: Cell) {
+            return cell.input;
+        }
+    }
 }
 
 class ModelImpl implements Model.Notebook {
@@ -77,6 +94,10 @@ class ModelImpl implements Model.Notebook {
     from(json?: { cells?: Model.Cell[] }) {
         this.cells = json?.cells ?? [this.mkCodeCell()];
         return this;
+    }
+
+    to(): Model.Notebook & Partial<ModelImpl> {
+        return {cells: this.cells};
     }
 
     static promote(m: Model.Notebook) {
