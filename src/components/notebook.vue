@@ -65,17 +65,13 @@ class INotebook extends Vue {
             case 'exec-fwd':
                 this.executingCell = cellAction;
                 break;
-            case 'delete':
-            case 'go-up':
-            case 'go-down':
-            case 'insert-after':
-            case 'insert-before':
-                if (cellActionResult?.reply != undefined) {
-                    requestAnimationFrame(() =>
-                        this.focusCell(cellActionResult.reply));
-                }
-                this.cleanup();
-                break;
+        }
+
+        this.cleanup();
+
+        if (cellActionResult?.reply != undefined) {
+            requestAnimationFrame(() =>
+                this.focusCell(cellActionResult.reply));
         }
 
         this.$emit('cell:action', cellAction);

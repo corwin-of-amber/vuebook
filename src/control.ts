@@ -15,6 +15,8 @@ class NotebookActions {
             case 'exec':
             case 'exec-fwd':
                 this.model.clearOutputs(action.cell);
+                if (action.type === 'exec-fwd')
+                    reply = this.goDown(action.cell);
                 break;
             case 'insert-after':
                 reply = this.insertAfter(action.cell);
