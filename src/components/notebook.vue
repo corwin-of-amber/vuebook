@@ -92,7 +92,8 @@ class INotebook extends Vue {
         let redundant = [...this._keys.keys()].filter(k => !s.has(k));
         for (let k of redundant) this._keys.delete(k);
 
-        if (!s.has(this.focusedCell)) this.focusedCell = undefined;
+        if (!s.has(vue.toRaw(this.focusedCell)))
+            this.focusedCell = undefined;
     }
 
     focusCell(cell: M.Cell) {

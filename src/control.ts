@@ -21,6 +21,9 @@ class NotebookActions {
             case 'insert-after':
                 reply = this.insertAfter(action.cell);
                 break;
+            case 'insert-before':
+                reply = this.insertBefore(action.cell);
+                break;
             case 'delete':
                 reply = this.model.delete(action.cell);
                 break;
@@ -61,6 +64,12 @@ class NotebookActions {
     insertAfter(cell: M.Cell): M.Cell {
         const newCell = this.model.mkCodeCell();
         this.model.insert(cell, newCell, true);
+        return newCell;
+    }
+
+    insertBefore(cell: M.Cell): M.Cell {
+        const newCell = this.model.mkCodeCell();
+        this.model.insert(cell, newCell, false);
         return newCell;
     }
 }

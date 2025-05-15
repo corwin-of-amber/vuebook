@@ -10,4 +10,5 @@ export {default as Cell, ICell} from './components/cell.vue';
 // @ts-ignore
 export {default as CommandPalette, ICommandPalette} from './components/command-palette/index.vue';
 
+export {Options} from './options';
 export {ICodeEditor, CodeEditor, Setup, Completion, EditorView} from './components/editor';

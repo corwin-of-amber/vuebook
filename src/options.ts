@@ -2,7 +2,8 @@
 type Options = {
     collapsible?: boolean
     editor: {
-        completions: {label: string}[]
+        completions: {label: string}[],
+        virtualKeyboard: boolean
     }
 }
 
@@ -11,7 +12,8 @@ namespace Options {
     export const DEFAULTS: Options = {
         collapsible: true,
         editor: {
-            completions: []
+            completions: [],
+            virtualKeyboard: true
         }
     }
 

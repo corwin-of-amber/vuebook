@@ -4,7 +4,7 @@
             <template v-if="options.collapsible">
                 <collapse-button :toggle="toggleCollapsed" :collapsed="collapsed" class="collapse-btn-extend"/>
             </template>
-            <div class="cell--input" ref="input"></div>
+            <div class="cell--input" ref="input" virtualkeyboardpolicy="manual"></div>
         </div>
         <div class="cell--outputs" v-if="!collapsed">
             <spinner-anim v-if="model.loading" style="--size: 20px; display: inline-block; vertical-align: middle"/>
@@ -34,7 +34,7 @@ import CollapseButton from "./collapse-button/collapse-button.vue";
 
 @Component({
     "emits": ['action'],
-    components: {SpinnerAnim, CollapseButton}
+    components: { SpinnerAnim, CollapseButton }
 })
 class ICell extends Vue {
     @Prop model: M.Cell
@@ -66,6 +66,12 @@ class ICell extends Vue {
         this.$watch(() => this.options.editor?.completions, v => {
             this.editor.completions = v;
         }, {immediate: true});
+
+        // Prevent virtual keyboard from popping up (on mobile) if requested
+        if (this.options.editor.virtualKeyboard === false) {
+            let ce = this.$refs.input.querySelector('[contenteditable=true]');
+            ce?.setAttribute('virtualkeyboardpolicy', 'manual');
+        }
     }
 
     updateModel() {
