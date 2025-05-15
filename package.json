@@ -5,7 +5,7 @@
     "build": "webpack",
     "build_docker": "webpack && npm link"
   },
-  "module": "src/index.ts",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
     "@codemirror/lang-python": "^6.1.3",

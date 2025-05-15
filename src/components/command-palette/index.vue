@@ -27,6 +27,7 @@
 import { Component, Vue, Prop, Ref, toNative } from 'vue-facing-decorator';
 import { Command } from 'vue-command-palette';
 import './index.scss';
+import './themes/simple.scss';
 
 @Component({
     emits: ['command'],
