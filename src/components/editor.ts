@@ -1,4 +1,5 @@
 import {EventEmitter} from 'events';
+import {Prec} from '@codemirror/state';
 import {EditorView, keymap} from '@codemirror/view';
 import {defaultKeymap, history, historyKeymap, indentWithTab} from '@codemirror/commands';
 import {EditorState, StateField} from '@codemirror/state';
@@ -100,18 +101,26 @@ namespace Setup {
     function nav() {
         let emit = (type: string) => (cm: EditorView) =>
             cm.state.field(operator).emit('action', {type});
-        return keymap.of([
-            {key: "Shift-Enter", run: emit('exec-fwd')},
-            {key: "Mod-Enter", run: emit('exec')},
-            {key: "Ctrl-=", run: emit('insert-after')},
-            {key: "Ctrl-Shift-=", run: emit('insert-before')},
-            {key: "Ctrl--", run: emit('delete')},
-            {key: "ArrowUp", run: emit('go-up')},
-            {key: "ArrowDown", run: emit('go-down')},
-            /** @todo these shortcuts are not good (`Shift-+` has no meaning) */
-            //{key: 'Ctrl-Shift-+', run: emit('expand-all')},
-            //{key: 'Ctrl-Shift--', run: emit('collapse-all')},
-        ]);
+        return [
+            /* These should override shortcuts of other maps (incl. default) */
+            Prec.high(keymap.of([
+                {key: "Shift-Enter", run: emit('exec-fwd')},
+                {key: "Mod-Enter", run: emit('exec')}
+            ])),
+            keymap.of([
+                {key: "Ctrl-=", run: emit('insert-after')},
+                {key: "Ctrl-Shift-=", run: emit('insert-before')},
+                {key: "Ctrl--", run: emit('delete')},
+                /** @todo these shortcuts are not good (`Shift-+` has no meaning) */
+                //{key: 'Ctrl-Shift-+', run: emit('expand-all')},
+                //{key: 'Ctrl-Shift--', run: emit('collapse-all')},
+            ]),
+            /* These should *only* be called when default mapping rejects them
+             * (i.e. at beginning/end of cell) */
+            Prec.low(keymap.of([
+                {key: "ArrowUp", run: emit('go-up')},
+                {key: "ArrowDown", run: emit('go-down')},
+            ]))];
     }
 
     export async function autoCompletion(context: CompletionContext, completions: Completion[] = []) {
