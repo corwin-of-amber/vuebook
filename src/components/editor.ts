@@ -3,9 +3,10 @@ import {Prec} from '@codemirror/state';
 import {EditorView, keymap} from '@codemirror/view';
 import {defaultKeymap, history, historyKeymap, indentWithTab} from '@codemirror/commands';
 import {EditorState, StateField} from '@codemirror/state';
-import {defaultHighlightStyle, indentUnit, syntaxHighlighting} from '@codemirror/language';
+import {defaultHighlightStyle, indentUnit, syntaxHighlighting,
+        bracketMatching} from '@codemirror/language';
 import {pythonLanguage} from '@codemirror/lang-python';
-import {autocompletion, Completion, CompletionContext, completeFromList} from '@codemirror/autocomplete';
+import {autocompletion, Completion, CompletionContext} from '@codemirror/autocomplete';
 
 interface ICodeEditor {
     new(container: HTMLElement, initialContent: string, completions?: Completion[]): CodeEditor
@@ -80,6 +81,7 @@ namespace Setup {
         keymap.of([indentWithTab]),
         history(),
         syntaxHighlighting(defaultHighlightStyle), indentUnit.of('    '),
+        bracketMatching(),
         updateListener(), nav(),
         autocompletion(),
         pythonLanguage.extension
