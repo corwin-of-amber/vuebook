@@ -63,6 +63,10 @@ class ICell extends Vue {
         this.$watch(() => this.model.outputs, v => {
             this.expand();
         })
+        this.$watch(() => this.model.kind, v => {
+            if (v.startsWith('code/'))
+                this.editor.language = v.replace(/^code\//, '');
+        }, {immediate: true});
         this.$watch(() => this.options.editor?.completions, v => {
             this.editor.completions = v;
         }, {immediate: true});
